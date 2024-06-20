@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { DbConnect } from './db';
 import flippers from './routes/flippers';
+import marques from './routes/marques';
 
 async function startServer() {
   const app = express();
@@ -15,6 +16,7 @@ async function startServer() {
   });
 
   app.use('/api/flippers', flippers);
+  app.use('/api/marques', marques);
 
   app.use('*', (req: Request, res: Response) => {
     res.status(404).json({ msg: '404 - Not Found' });
