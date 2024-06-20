@@ -1,26 +1,26 @@
-import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
+import express, { Request, Response } from 'express';
 import { DbConnect } from './db';
-import flippersRouter from './routes/flippers';
+import flippers from './routes/flippers';
 
 async function startServer() {
-  const app = new Hono();
+  const app = express();
+
+  app.use(express.json());
+
   await DbConnect();
 
   const port = 3000;
-
-  app.route('/api/flippers', flippersRouter);
-
-  app.use("*", (req, res) => {
-    return res.json({ msg: '404' });
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
 
-  await serve({
-    fetch: app.fetch,
-    port
-  });
+  app.use('/api/flippers', flippers);
 
-  console.log(`Server listening on port ${port}`);
+  app.use('*', (req: Request, res: Response) => {
+    res.status(404).json({ msg: '404 - Not Found' });
+  });
 }
 
-startServer().catch(err => console.error(err));
+startServer().catch(err => {
+  console.error('Error starting server:', err);
+});
